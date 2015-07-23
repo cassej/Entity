@@ -206,8 +206,10 @@ PHP_METHOD(Entity, __construct)
 
     zend_entity_object *obj = (zend_entity_object*)zend_object_store_get_object(getThis() TSRMLS_CC);
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|ab", &zdata, &new_entity) == FAILURE) {
-          return;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|zb", &zdata, &new_entity) == FAILURE) {
+        if(Z_TYPE_P(zdata) != IS_NULL || Z_TYPE_P(zdata) != IS_ARRAY) {
+            return;
+        }
     }
 
     if(ZEND_NUM_ARGS() > 0) {
@@ -243,10 +245,8 @@ PHP_METHOD(Entity, __construct)
     }
 }
 
-
 PHP_METHOD(Entity, getChanges)
 {
-
     zend_entity_object *obj = (zend_entity_object*)zend_object_store_get_object(getThis() TSRMLS_CC);
     zval *val = NULL;
     MAKE_STD_ZVAL(val);
@@ -256,12 +256,8 @@ PHP_METHOD(Entity, getChanges)
     RETURN_ZVAL(val, 1, 0);
 }
 
-
-
-
 PHP_METHOD(Entity, getData)
 {
-
     array_init(return_value);
 
     zval **value, *member;
@@ -271,7 +267,6 @@ PHP_METHOD(Entity, getData)
 
     zend_property_info *property_info;
     zend_hash_internal_pointer_reset(Z_OBJPROP_P(getThis()));
-
 
     while(zend_hash_has_more_elements(Z_OBJPROP_P(getThis())) == SUCCESS) {
         zend_hash_get_current_key(Z_OBJPROP_P(getThis()), &key, &key_index, 0);
@@ -288,5 +283,4 @@ PHP_METHOD(Entity, getData)
     }
 
     convert_to_array(return_value);
-
 }
